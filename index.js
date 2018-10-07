@@ -5,7 +5,7 @@ const server = require('http').createServer(app);
 const io = require('socket.io').listen(server); // import package socket.io
 const path = require('path'); // import package path (sudah default ada)
 
-app.use(express.static(path.join(__dirname,'www'))); // untuk nempation file web kita di folder www
+app.use(express.static(path.join(__dirname,'public'))); // untuk nempation file web kita di folder public
 const portListen = 3030;
 server.listen(portListen);
 console.log("Server starting... 192.168.1.2:" + portListen)
@@ -48,6 +48,12 @@ app.get('/flyDrone-Device1', (req,res,next) => {
 
 	 
 });
+
+//publish for requesting something
+app.get('/thisHouse-device', (req, res, next) => {
+	clientMqtt.publish("iot-house/this", "check-up");
+	res.sendFile(__dirname + 'something.html');
+})
 /*===================================
 =            End here               =
 ===================================*/
@@ -58,9 +64,9 @@ app.get('/flyDrone-Device1', (req,res,next) => {
 ============================*/
 
 const mqtt = require('mqtt');
-const topic1 = ''; //topic from iot.analyzer.com goes here
+const topic1 = 'iot-house/sensors'; //topic from iot.analyzer.com goes here
 
-const broker_server = 'mqtt://'; //broker server from iot.analyzer.com goes here
+const broker_server = 'mqtt://iot.indolyzer.com'; //broker server from iot.analyzer.com goes here
 
 const options = {
 	clientId : 'house_device' + Math.random().toString(16).substr(2, 8),
@@ -103,10 +109,41 @@ function mqtt_message(topic, message, paket){
 		listMessage = parsingRAWData(message, ",");
 		console.log("Payload : " + listMessage);
 
+		suhuTembok1 =listMessage[0];
+		suhuTembok2 =listMessage[1];
+		suhuTembok3 =listMessage[2];
+		
+		io.sockets.emit('iot-data',{
+			//json
+			topic: topic1,
+			suhuTembok1: suhuTembok1,
+			suhuTembok2: suhuTembok2,
+			suhuTembok3: suhuTembok3
+		});
 
 	}
 }
+/*===================================
+=            End here               =
+===================================*/
 
+
+/*=================================
+=            Socket IO            =
+=================================*/
+
+let clinetsIn = 0;
+
+io.on('connection', (socket) => {
+	clientsIn++
+	console.log('connected');
+
+
+	socket.on('disconnected', ()=>{
+		clientsIn--l
+		console.log('Disconnected')
+	})
+});
 
 
 // FUNCTION UNTUK PARSING
