@@ -1,3 +1,4 @@
+'use strict';
 // EXPREES DAN SOCKET IO
 const express = require('express'); // import package express
 const app = express(); 
@@ -5,89 +6,61 @@ const server = require('http').createServer(app);
 const io = require('socket.io').listen(server); // import package socket.io
 const path = require('path'); // import package path (sudah default ada)
 
-app.use(express.static(path.join(__dirname,'public'))); // untuk nempation file web kita di folder public
-const portListen = 3030;
+app.use(express.static(path.join(__dirname,'www'))); // untuk nempation file web kita di folder www
+const portListen = 8080;
 server.listen(portListen);
-console.log("Server starting... 192.168.1.2:" + portListen)
+console.log("Server starting...:" + portListen)
+var idDevice = 'houseDevice-1', temperature = 0 , humidity = 0 , windSpeed = 0 , windDirection = 0, luxIntensity = 0;
 
-var deviceId = 'house-IOT', suhuTembok1 = 0, suhuTembok2 = 0, suhuTembok3 = 0, suhuTembok4 = 0;
+/*
+Bismillah
+Phase 1 :
+a. Config MQTT
+b. Susun datanya
+c. Tes lempar datanya ke web
 
-/*===================================
-=            API Express            =
-===================================*/
-app.get('/api/v1', (req,res,next) => {
-	 //let result = getIndoor();
-	//const results; 
-	
-			/*
-0. BME DATA : 0, 1, 2 data bme : suhu, lembab, tekanan
-1. LUX : 3
-2. rainfall : 4
-3. WIND DIR : 5
-4. GPS : 6, 7
+Phase 2 : 
+d. Desain UI
+e. Parse ke satu page dulu, page terdiri data angka dan data grafis
+f. Lanjut buat page selanjutnya
+g. Buat indeks
+
+Phase 3 :
+h. Hosting
+g. setting setting tipis
 */
-// 			const queryString = "SELECT * FROM weather";
-
-// 			conn.query(queryString, (err,result) => {
-// 				if(err){
-// 					console.log(err);
-// 				} else {
-// 					//console.log(result.rows);
-					
-// 					 res.json(result);
-// 					 console.log("Get data using API...");
-// 				}		
-// 			});
-	
-// });
-
-//Publish and subs goes here
-app.get('/flyDrone-Device1', (req,res,next) => {
-	clientMqtt.publish("telkomIoT/drone","fly");
-	res.sendFile(__dirname + '/index.html');
-
-	 
-});
-
-//publish for requesting something
-app.get('/thisHouse-device', (req, res, next) => {
-	clientMqtt.publish("iot-house/this", "check-up");
-	res.sendFile(__dirname + 'something.html');
-})
-/*===================================
-=            End here               =
-===================================*/
 
 
-/*============================
-=            MQTT            =
-============================*/
-
+// /*============================
+// =            MQTT            =
+// ============================*/
 const mqtt = require('mqtt');
-const topic1 = 'iot-house/sensors'; //topic from iot.analyzer.com goes here
-
-const broker_server = 'mqtt://iot.indolyzer.com'; //broker server from iot.analyzer.com goes here
+// const topic1 = 'DL1';
+const topic1 = 'houseIoT'; //dummy topic
+// const broker_server = 'mqtt://10.20.56.107'; //dummy broker
+const broker_server = 'mqtt://platform.antares.id'; //broker darisananya
 
 const options = {
 	clientId : 'house_device' + Math.random().toString(16).substr(2, 8),
-	port : 1883, 
-	keepalive: 60
+	port : 1883,
+	keepalive : 60
 }
-
-const clientMqtt = mqtt.connect(broker_server, options);
+const clientMqtt = mqtt.connect(broker_server,options);
 clientMqtt.on('connect', mqtt_connect);
 clientMqtt.on('reconnect', mqtt_reconnect);
 clientMqtt.on('error', mqtt_error);
-clientMqtt.on('message', mqtt_message);
+clientMqtt.on('message', mqtt_messageReceived);
 
-function mqtt_connect(){
-	console.log('Mqtt client connected');
+function mqtt_connect() {
+	console.log('MQTT Connected');
 	clientMqtt.subscribe(topic1);
+	// clientMqtt.subscribe(topic2);
 }
 
 function mqtt_reconnect(err){
 	console.log(err);
-	console.log('Mqtt client reconnect')
+	console.log('MQTT reconnect');
+	//clientMqtt = mqtt.connect(broker_server, options); // reconnect
 }
 
 function mqtt_error(err){
@@ -101,49 +74,67 @@ function after_publish() {
 
 
 let listMessage = [];
-function mqtt_message(topic, message, paket){
-	console.log('Topik : '+ topic);
-	console.log('Isi Pesan : '+ message);
+// pesan keterima dari broker dan diteruskan ke client
+function mqtt_messageReceived(topic , message , packet){
+	//console.log('Message received : ' + message);
+	//console.log('Topic :' + topic);
+	//var stringBuf = packet.payload.toString('utf-8');
+    //var obj = JSON.parse(message.toString());
+  	console.log('Topic : ' + topic );
+  	console.log('Payload : ' + message);
 
-	if(topic == topic1){
-		listMessage = parsingRAWData(message, ",");
-		console.log("Payload : " + listMessage);
 
-		suhuTembok1 =listMessage[0];
-		suhuTembok2 =listMessage[1];
-		suhuTembok3 =listMessage[2];
-		
-		io.sockets.emit('iot-data',{
-			//json
-			topic: topic1,
-			suhuTembok1: suhuTembok1,
-			suhuTembok2: suhuTembok2,
-			suhuTembok3: suhuTembok3
-		});
+  	//will use later
+	// if (topic == topic1){
+	// 	// message 
+	// 	listMessage = parsingRAWData(message,","); //parse the message by comma
+	// 	console.log("MSG : " +listMessage);
+	// 	// set message to var
+	// 	windSpeed = listMessage[0];
+	// 	windDirection = listMessage[1];
+	// 	luxIntensity = listMessage[2];
+	// 	temperature = listMessage[3];
+	// 	humidity = listMessage[4];
 
-	}
+	// 	io.sockets.emit('aws-data', {
+	// 								//json
+	// 								// call in client data.topic , data.windSpeeds....
+	// 								topic : topic1 ,
+	// 								windSpeeds : listMessage[0] , 
+	// 								windDirection : listMessage[1],
+	// 								luxIntensity : listMessage[2],
+	// 								temperature : listMessage[3],
+	// 								humidity : listMessage[4]
+	// 							});
+	// } 
 }
-/*===================================
-=            End here               =
-===================================*/
-
+// /*=====  End of MQTT  ======*/
 
 /*=================================
 =            Socket IO            =
 =================================*/
+let jumlahClient = 0;
+io.on('connection' , (socket)=> {
+	jumlahClient++;
+	console.log('New Client Connected');
 
-let clinetsIn = 0;
+	// socket.on('ctrl-led1', (data) => {
+	// 	// receive from web and publish mqtt to turn LED1
+	// 	clientMqtt.publish(topic2, data.data.toString());
+	// 	console.log('publish message to ' + topic1 + ' - message ' + data.data);
+	// });
 
-io.on('connection', (socket) => {
-	clientsIn++
-	console.log('connected');
 
+	socket.on('disconnect' , ()=> {
+		jumlahClient--;
+		console.log('Client disconnected \n' + 'Total :' + jumlahClient);
+	});
 
-	socket.on('disconnected', ()=>{
-		clientsIn--l
-		console.log('Disconnected')
-	})
 });
+
+
+/*=====  End of Socket IO  ======*/
+
 
 
 // FUNCTION UNTUK PARSING

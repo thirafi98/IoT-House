@@ -1,7 +1,15 @@
 Bismillah
-Todo List : 
-1. Config Mqtt to VPS
-2. Config Vps to iot.indolyzer.com
-3. Parsing Data
-4. Config domain
-4. Try to publish to domain
+Phase 1 :
+a. Config MQTT
+b. Susun datanya
+c. Tes lempar datanya ke web
+
+Phase 2 : 
+d. Desain UI
+e. Parse ke satu page dulu, page terdiri data angka dan data grafis
+f. Lanjut buat page selanjutnya
+g. Buat indeks
+
+Phase 3 :
+h. Hosting
+g. setting setting tipis
