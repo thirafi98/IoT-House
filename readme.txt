@@ -1,4 +1,5 @@
 Bismillah
+Semua commit codingan ada di : https://github.com/thirafi98/IoT-House
 Phase 1 :
 a. Config MQTT
 b. Susun datanya
