@@ -108,7 +108,7 @@ function update(){
 
 		});
 }
-
+//graph
 // $(function() {
 // 	Highcharts.setOptions({
 // 		global: {

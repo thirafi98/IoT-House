@@ -29,10 +29,11 @@ d. Desain UI
 e. Parse ke satu page dulu, page terdiri data angka dan data grafis
 f. Lanjut buat page selanjutnya
 g. Buat indeks
-
+ 
 Phase 3 :
 h. Hosting
 g. setting setting tipis
+i. buat data csv
 */
 
 
@@ -93,7 +94,7 @@ function mqtt_messageReceived(topic , message , packet){
 	if (topic == topic1){
 		// message 
 		listMessage = parsingRAWData(message,","); //parse the message by comma
-		console.log("MSG : " +listMessage);
+		console.log("Pesan : " +listMessage);
 		// set message to var
 		data1 = listMessage[0];
 		data2 = listMessage[1];
