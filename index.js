@@ -35,6 +35,82 @@ h. Hosting
 g. setting setting tipis
 i. buat data csv
 */
+/*=====================================
+=            Mysql SQL            =
+=====================================*/
+var mysql = require('mysql');
+var conn = mysql.createConnection({
+	//all mysql information from hosting goes here
+	host     : 'localhost', 
+	user     : 'root',
+	password : '',
+	database : 'mydb'
+});
+
+//connection to mysql
+// conn.connect(function(err){
+// 	if (err) {
+// 		console.error('Error...' + err.stack);
+// 		return;
+// 	}
+// 	console.log('Sukses...terkoneksi pada ' + conn.threadId)
+// });
+
+// function insertData(data){
+// 	console.log(data);
+// 	var dataInsert = {
+// 		data1 : data1,
+// 		data2 : data2,
+// 		data3 : data3,
+// 		data4 : data4,
+// 		data5 : data5,
+// 		data6 : data6,
+// 		data7 : data7,
+// 		data8 : data8,
+// 		data9 : data9,
+// 		data10 : data10,
+// 		data11 : data11,
+// 		data12 : data12,
+// 		data13 : data13,
+// 		data14 : data14,
+// 		data15 : data15,
+// 		data16 : data16,
+// 		data17 : data17,
+// 		data18 : data18,
+// 		data19 : data19,
+// 		data20 : data20,
+// 		data21 : data21,
+// 		data22 : data22,
+// 		data23 : data23,
+// 		data24 : data24,
+// 		data25 : data25,
+// 		data26 : data26,
+// 		data27 : data27,
+// 		data28 : data28,
+// 		data29 : data29,
+// 		data30 : data30,
+// 		data31 : data31,
+// 		data32 : data32,
+// 		data33 : data33,
+// 		data34 : data34,
+// 		data35 : data35,
+// 		data36 : data36,
+// 		data37 : data37,
+// 		data38 : data38,
+// 		data39 : data39,
+// 		data40 : data40
+// 	};
+// 	conn.query('INSERT INTO dataCloud SET?', dataInsert, function(err,result){
+// 		if (err) {
+// 			console.log(err);
+// 		}else{
+// 			console.log('Data masuk.....');
+// 		}
+// 	})
+// };
+4
+
+
 
 
 // /*============================
